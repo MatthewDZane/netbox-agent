@@ -86,8 +86,18 @@ class LSHW():
         })
 
     def find_storage(self, obj):
-        serials = []
-        if "nvme" in obj["configuration"]["driver"]:
+        if "children" in obj:
+            for device in obj["children"]:
+                self.disks.append({
+                    "logicalname": device.get("logicalname"),
+                    "product": device.get("product"),
+                    "serial": device.get("serial"),
+                    "version": device.get("version"),
+                    "size": device.get("size"),
+                    "description": device.get("description"),
+                    "type": device.get("description"),
+                })
+        elif "nvme" in obj["configuration"]["driver"]:
             if not is_tool('nvme'):
                 logging.error('nvme-cli >= 1.0 does not seem to be installed')
                 return
