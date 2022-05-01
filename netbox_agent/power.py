@@ -11,7 +11,13 @@ class PowerSupply():
         self.server = server
         self.netbox_server = self.server.get_netbox_server()
         if self.server.is_blade():
-            self.device_id = self.netbox_server.parent_device.id if self.netbox_server else None
+            if self.netbox_server:
+                if self.netbox_server.parent_device:
+                    self.device_id = self.netbox_server.parent_device.id
+                else:
+                    self.device_id = None
+            else:
+                self.device_id = None
         else:
             self.device_id = self.netbox_server.id if self.netbox_server else None
 
