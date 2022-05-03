@@ -289,10 +289,13 @@ class Network(object):
             # if pvid is not present, it'll be processed as a vlan tagged interface
             vlans = self.lldp.get_switch_vlan(nic['name'])
             for vid, vlan_infos in vlans.items():
-                nb_vlan = self.get_or_create_vlan(vid)
-                if vlan_infos.get('vid'):
-                    interface.mode = self.dcim_choices['interface:mode']['Access']
-                    interface.untagged_vlan = nb_vlan.id
+                if vid.isdigit():
+                    nb_vlan = self.get_or_create_vlan(vid)
+                    if vlan_infos.get('vid'):
+                        interface.mode = self.dcim_choices['interface:mode']['Access']
+                        interface.untagged_vlan = nb_vlan.id
+                else:
+                    logging.error("Vid {} is not an integer. Skipping vid".format(vid))
             interface.save()
 
         # cable the interface
