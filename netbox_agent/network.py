@@ -86,7 +86,7 @@ class Network(object):
 
             mac = open('/sys/class/net/{}/address'.format(interface), 'r').read().strip()
             vlan = None
-            if len(interface.split('.')) > 1:
+            if len(interface.split('.')) > 1 and interface.split('.')[1].isnumeric():
                 vlan = int(interface.split('.')[1])
 
             bonding = False
