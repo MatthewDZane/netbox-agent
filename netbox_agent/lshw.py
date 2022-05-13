@@ -72,18 +72,24 @@ class LSHW():
         # Some interfaces do not have device (logical) name (eth0, for
         # instance), such as not connected network mezzanine cards in blade
         # servers. In such situations, the card will be named `unknown[0-9]`.
-        unkn_intfs = [
-            i for i in self.interfaces if i["name"].startswith("unknown")
-        ]
-        unkn_name = "unknown{}".format(len(unkn_intfs))
-        self.interfaces.append({
-            "name": obj.get("logicalname", unkn_name),
-            "macaddress": obj.get("serial", ""),
-            "serial": obj.get("serial", ""),
-            "product": obj["product"],
-            "vendor": obj["vendor"],
-            "description": obj["description"],
-        })
+        unkn_intfs = []
+        for i in self.interfaces:
+            if type(i["name"]) == list:
+                i["name"] = i["name"][0]
+
+            if i["name"].startswith("unknown"):
+                unkn_intfs.append(i)
+
+        if obj["description"] != "Ethernet controller":
+            unkn_name = "unknown{}".format(len(unkn_intfs))
+            self.interfaces.append({
+                "name": obj.get("logicalname", unkn_name),
+                "macaddress": obj.get("serial", ""),
+                "serial": obj.get("serial", ""),
+                "product": obj["product"],
+                "vendor": obj["vendor"],
+                "description": obj["description"],
+            })
 
     def find_storage(self, obj):
         if "children" in obj:
