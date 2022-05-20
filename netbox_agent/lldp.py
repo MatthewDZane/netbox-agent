@@ -51,13 +51,13 @@ class LLDP():
 
     def get_switch_ip(self, interface):
         # lldp.eth0.chassis.mgmt-ip=100.66.7.222
-        if self.data['lldp'].get(interface) is None or 'mgmt-ip' not in self.data['lldp'][interface]['chassis']:
+        if 'lldp' not in self.data or self.data['lldp'].get(interface) is None or 'mgmt-ip' not in self.data['lldp'][interface]['chassis']:
             return None
         return self.data['lldp'][interface]['chassis']['mgmt-ip']
 
     def get_switch_port(self, interface):
         # lldp.eth0.port.descr=GigabitEthernet1/0/1
-        if self.data['lldp'].get(interface) is None:
+        if 'lldp' not in self.data or self.data['lldp'].get(interface) is None:
             return None
         if self.data['lldp'][interface]['port'].get('ifname'):
             return self.data['lldp'][interface]['port']['ifname']
@@ -65,6 +65,6 @@ class LLDP():
 
     def get_switch_vlan(self, interface):
         # lldp.eth0.vlan.vlan-id=296
-        if self.data['lldp'].get(interface) is None or 'vlan' not in self.data['lldp'][interface]['chassis']:
+        if 'lldp' not in self.data or self.data['lldp'].get(interface) is None or 'vlan' not in self.data['lldp'][interface]['chassis']:
             return None
         return self.data['lldp'][interface]['vlan']
