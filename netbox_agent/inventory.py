@@ -365,6 +365,10 @@ class Inventory():
         return uniq
 
     def create_netbox_disk(self, disk):
+        if disk['Model'] is None:
+            print("Skipping disk:", disk)
+            return
+
         manufacturer = None
         if "Vendor" in disk:
             manufacturer = self.find_or_create_manufacturer(disk["Vendor"])
