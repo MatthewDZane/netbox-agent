@@ -73,6 +73,10 @@ def get_vendor(name):
         'MG': 'Toshiba',
         'WD': 'WDC'
     }
+
+    if name is None:
+        return None
+
     for key, value in vendors.items():
         if name.upper().startswith(key):
             return value
