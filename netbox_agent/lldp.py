@@ -65,6 +65,6 @@ class LLDP():
 
     def get_switch_vlan(self, interface):
         # lldp.eth0.vlan.vlan-id=296
-        if self.data['lldp'].get(interface) is None:
+        if self.data['lldp'].get(interface) is None or 'vlan' not in self.data['lldp'][interface]['chassis']:
             return None
         return self.data['lldp'][interface]['vlan']
