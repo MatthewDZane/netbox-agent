@@ -339,7 +339,8 @@ class Inventory():
         ]
 
         for disk in self.lshw.get_hw_linux("storage"):
-            if self.is_virtual_disk(disk, raid_devices):
+
+            if disk['product'] is None or self.is_virtual_disk(disk, raid_devices):
                 continue
             size = disk.get('size', 0)
             if size is not None:
