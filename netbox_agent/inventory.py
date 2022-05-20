@@ -318,8 +318,7 @@ class Inventory():
         if logicalname in raid_devices or \
            disk_type is None or \
            product in non_raid_disks or \
-           'virtual' in product.lower() or \
-           'logical' in product.lower() or \
+            (product is not None and ('virtual' in product.lower() or 'logical' in product.lower())) or \
            'volume' in description.lower() or \
            description == 'SCSI Enclosure' or \
            (size is None and logicalname is None):
