@@ -14,6 +14,7 @@ class LSHW():
         data = subprocess.getoutput(
             'lshw -quiet -json'
         )
+        data = data.replace("\"#\\\"", "\"#\\\\\"")
         json_data = json.loads(data)
         # Starting from version 02.18, `lshw -json` wraps its result in a list
         # rather than returning directly a dictionary
