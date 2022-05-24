@@ -25,11 +25,12 @@ class ServerBase():
         self.chassis = dmidecode.get_by_type(self.dmi, 'Chassis')
         self.system = dmidecode.get_by_type(self.dmi, 'System')
 
-        service_tag = self.get_service_tag()
+        generic_service_tags = ["0123456789", "123456789", "System Serial Number"]
 
+        service_tag = self.get_service_tag()
         if "suncave" in self.get_hostname():
             self.system[0]['Serial Number'] = self.get_hostname()
-        elif service_tag == "0123456789" or service_tag is "System Serial Number":
+        elif service_tag in generic_service_tags:
             self.network = ServerNetwork(server=self)
             self.system[0]['Serial Number'] = self.network.get_ipmi()['mac']
 
