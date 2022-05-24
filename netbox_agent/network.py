@@ -476,6 +476,10 @@ class Network(object):
             if nic['ip']:
                 # sync local IPs
                 for ip in nic['ip']:
+                    if ip == "0.0.0.0/0":
+                        logging.error("IP {IP} is invalid. Skipping".format(IP=ip))
+                        continue
+
                     self.create_or_update_netbox_ip_on_interface(ip, interface)
             if nic_update > 0:
                 interface.save()
