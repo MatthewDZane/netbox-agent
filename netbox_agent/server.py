@@ -25,7 +25,7 @@ class ServerBase():
         self.chassis = dmidecode.get_by_type(self.dmi, 'Chassis')
         self.system = dmidecode.get_by_type(self.dmi, 'System')
 
-        generic_service_tags = ["0123456789", "123456789", "System Serial Number"]
+        generic_service_tags = ["1234567890", "0123456789", "123456789", "System Serial Number"]
 
         service_tag = self.get_service_tag()
         if "suncave" in self.get_hostname():
