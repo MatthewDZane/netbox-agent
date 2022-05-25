@@ -90,7 +90,7 @@ class PowerSupply():
 
         for psu in psus:
             if psu['name'] not in [x.name for x in nb_psus]:
-                if psu["maximum_draw"] >= 1:
+                if psu["maximum_draw"] is None or psu["maximum_draw"] >= 1:
                     logging.info('Creating PSU {name} ({description}), {maximum_draw}W'.format(
                         **psu
                     ))
