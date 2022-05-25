@@ -104,7 +104,7 @@ class LSHW():
                     "description": device.get("description"),
                     "type": device.get("description"),
                 })
-        elif "driver" not in obj["configuration"]:
+        elif "configuration" not in obj or "driver" not in obj["configuration"]:
             return
         elif "nvme" in obj["configuration"]["driver"]:
             if not is_tool('nvme'):
