@@ -365,6 +365,10 @@ class Inventory():
         return uniq
 
     def create_netbox_disk(self, disk):
+        if "Type" in disk and disk["Type"] == "DVD-RAM writer":
+            logging.info('Skipping DVD-RAM writer')
+            return
+
         if disk['Model'] is None:
             print("Skipping disk:", disk)
             return
