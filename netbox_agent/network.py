@@ -299,7 +299,7 @@ class Network(object):
             interface.save()
 
         # cable the interface
-        if config.network.lldp:
+        if not isinstance(self, VirtualNetwork) and config.network.lldp:
             switch_ip = self.lldp.get_switch_ip(interface.name)
             switch_interface = self.lldp.get_switch_port(interface.name)
 
@@ -464,7 +464,7 @@ class Network(object):
                     interface.lag = None
 
             # cable the interface
-            if config.network.lldp:
+            if not isinstance(self, VirtualNetwork) and config.network.lldp:
                 switch_ip = self.lldp.get_switch_ip(interface.name)
                 switch_interface = self.lldp.get_switch_port(interface.name)
                 if switch_ip and switch_interface:
