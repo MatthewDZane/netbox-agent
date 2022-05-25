@@ -61,6 +61,8 @@ class LLDP():
             return None
         if self.data['lldp'][interface]['port'].get('ifname'):
             return self.data['lldp'][interface]['port']['ifname']
+        if "descr" not in self.data['lldp'][interface]['port']:
+            return None
         return self.data['lldp'][interface]['port']['descr']
 
     def get_switch_vlan(self, interface):
