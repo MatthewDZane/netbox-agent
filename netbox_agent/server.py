@@ -292,6 +292,29 @@ class ServerBase():
         )
         return new_server
 
+    def _netbox_update_server(self, server_id, datacenter, tenant, rack):
+        device_role = get_device_role(config.device.server_role)
+        device_type = get_device_type(self.get_product_name())
+        if not device_type:
+            raise Exception('Chassis "{}" doesn\'t exist'.format(self.get_chassis()))
+        serial = self.get_service_tag()
+        hostname = self.get_hostname()
+        logging.info('Creating server (serial: {serial}) {hostname}'.format(
+            serial=serial, hostname=hostname))
+        new_server = nb.dcim.devices.update({
+            "id": server_id,
+            "name": hostname,
+            "serial": serial,
+            "device_role": device_role.id,
+            "device_type": device_type.id,
+            "platform": self.device_platform,
+            "site": datacenter.id if datacenter else None,
+            "tenant": tenant.id if tenant else None,
+            "rack": rack.id if rack else None,
+            "tags": [{'name': x} for x in self.tags]
+        })
+        return new_server[0]
+
     def get_netbox_server(self, expansion=False):
         if expansion is False:
             return nb.dcim.devices.get(serial=self.get_service_tag())
@@ -413,8 +436,11 @@ class ServerBase():
             self._netbox_set_or_update_blade_slot(server, chassis, datacenter)
         else:
             server = nb.dcim.devices.get(serial=self.get_service_tag())
-            if not server:
+            if server:
+                server = self._netbox_update_server(server.id, datacenter, tenant, rack)
+            else:
                 server = self._netbox_create_server(datacenter, tenant, rack)
+
 
         logging.debug('Updating Server...')
         # check network cards
