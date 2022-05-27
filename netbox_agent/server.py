@@ -301,7 +301,7 @@ class ServerBase():
         hostname = self.get_hostname()
         logging.info('Creating server (serial: {serial}) {hostname}'.format(
             serial=serial, hostname=hostname))
-        new_server = nb.dcim.devices.update({
+        new_server = nb.dcim.devices.update([{
             "id": server_id,
             "name": hostname,
             "serial": serial,
@@ -312,7 +312,7 @@ class ServerBase():
             "tenant": tenant.id if tenant else None,
             "rack": rack.id if rack else None,
             "tags": [{'name': x} for x in self.tags]
-        })
+        }])
         return new_server[0]
 
     def get_netbox_server(self, expansion=False):
