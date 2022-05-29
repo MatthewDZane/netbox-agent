@@ -72,6 +72,17 @@ class Datacenter(LocationBase):
         super().__init__(driver, driver_value, driver_file, regex)
 
 
+class Location(LocationBase):
+    def __init__(self):
+        driver = config.location.driver.split(':')[0] if \
+            config.location.driver else None
+        driver_value = ':'.join(config.location.driver.split(':')[1:]) if \
+            config.location.driver else None
+        driver_file = config.location.driver_file
+        regex = config.location.regex
+        super().__init__(driver, driver_value, driver_file, regex)
+
+
 class Rack(LocationBase):
     def __init__(self):
         driver = config.rack_location.driver.split(':')[0] if \
