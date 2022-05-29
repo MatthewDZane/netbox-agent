@@ -2,7 +2,7 @@ import netbox_agent.dmidecode as dmidecode
 from netbox_agent.config import config
 from netbox_agent.config import netbox_instance as nb
 from netbox_agent.inventory import Inventory
-from netbox_agent.location import Datacenter, Rack, Tenant
+from netbox_agent.location import Datacenter, Location, Rack, Tenant
 from netbox_agent.misc import create_netbox_tags, get_device_role, get_device_type, get_device_platform
 from netbox_agent.network import ServerNetwork
 from netbox_agent.power import PowerSupply
@@ -127,6 +127,34 @@ class ServerBase():
             update = True
         return update
 
+    def get_location(self):
+        location = Location()
+        return location.get()
+
+    def get_netbox_location(self):
+        location = self.get_location()
+        datacenter = self.get_netbox_datacenter()
+        if not location:
+            return None
+        if location and not datacenter:
+            logging.error("Can't get location if no datacenter is configured or found")
+            sys.exit(1)
+
+        location_name = location.replace("-", " ")
+        nb_location = nb.dcim.locations.get(
+            name=location_name,
+            site_id=datacenter.id,
+        )
+
+        if nb_location is None:
+            nb_location = nb.dcim.locations.create(
+                name=location_name,
+                slug=location.lower(),
+                site=datacenter.id
+            )
+
+        return nb_location
+
     def get_rack(self):
         rack = Rack()
         return rack.get()
@@ -140,10 +168,16 @@ class ServerBase():
             logging.error("Can't get rack if no datacenter is configured or found")
             sys.exit(1)
 
-        return nb.dcim.racks.get(
+        nb_rack = nb.dcim.racks.get(
             name=rack,
             site_id=datacenter.id,
         )
+
+        if nb_rack is None:
+            nb_location = self.get_netbox_location()
+            nb_rack = nb.dcim.racks.create(name=rack, site=datacenter.id, location=nb_location.id)
+
+        return nb_rack
 
     def get_product_name(self):
         """
@@ -288,6 +322,7 @@ class ServerBase():
             site=datacenter.id if datacenter else None,
             tenant=tenant.id if tenant else None,
             rack=rack.id if rack else None,
+            location=rack.location.id if rack else self.get_netbox_location().id,
             tags=[{'name': x} for x in self.tags],
         )
         return new_server
@@ -311,6 +346,7 @@ class ServerBase():
             "site": datacenter.id if datacenter else None,
             "tenant": tenant.id if tenant else None,
             "rack": rack.id if rack else None,
+            "location": rack.location.id if rack else self.get_netbox_location().id,
             "tags": [{'name': x} for x in self.tags]
         }])
         return new_server[0]
