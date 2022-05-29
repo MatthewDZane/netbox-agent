@@ -56,6 +56,12 @@ def get_config():
                    help='role to use for a chassis')
     p.add_argument('--device.server_role', default=r'Server',
                    help='role to use for a server')
+    p.add_argument('--location.driver',
+                   help='location driver, ie cmd, file')
+    p.add_argument('--location.driver_file',
+                   help='location driver custom driver file path')
+    p.add_argument('--location.regex',
+                   help='location regex to extract Netbox location slug')
     p.add_argument('--tenant.driver',
                    help='tenant driver, ie cmd, file')
     p.add_argument('--tenant.driver_file',
