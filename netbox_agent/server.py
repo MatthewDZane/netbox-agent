@@ -623,7 +623,7 @@ class ServerBase():
             update += ret
 
         if config.update_all:
-            server = self._netbox_update_server(server.id, datacenter, tenant, rack)
+            server = self._netbox_update_server(server.id, datacenter, tenant)
             update += True
 
         if server.platform != self.device_platform:
