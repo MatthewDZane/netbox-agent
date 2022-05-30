@@ -72,15 +72,15 @@ class ServerBase():
     def get_netbox_datacenter(self):
         dc = self.get_datacenter()
         if dc is None:
-            logging.error("Specificing a datacenter (Site) is mandatory in Netbox")
+            logging.error("Specifying a datacenter (Site) is mandatory in Netbox")
             sys.exit(1)
 
-        nb_dc = nb.dcim.sites.get(
-            slug=dc,
-        )
+        slug = dc.lower().replace(" ", "-")
+        nb_dc = nb.dcim.sites.get(slug=slug)
+
         if nb_dc is None:
-            logging.error("Site (slug: {}) has not been found".format(dc))
-            sys.exit(1)
+            logging.error("Creating Site {name}. Remember to set the Region.".format(name=dc))
+            nb.dcim.sites.create(name=dc, slug=slug, status="active")
 
         return nb_dc
 
@@ -90,15 +90,31 @@ class ServerBase():
         nb_dc = self.get_netbox_datacenter()
 
         update = False
-        if dc and server.site and server.site.slug != nb_dc.slug:
+        if server.site != nb_dc:
+            old_nb_dc = server.site
+
             logging.info('Datacenter location has changed from {} to {}, updating'.format(
                 server.site.slug,
                 nb_dc.slug,
             ))
             update = True
-            server.site = nb_dc.id
+            server.site = nb_dc
+
+            nb.dcim.devices.update([{
+                "id": server.id,
+                "site": server.site.id if server.site is not None else None
+            }])
+
+            if old_nb_dc is not None:
+                old_nb_dc = nb.dcim.sites.get(slug=old_nb_dc.slug)
+
+                if old_nb_dc.device_count == 0:
+                    logging.info("Deleting Site: {name}".format(name=old_nb_dc.site.name))
+                    nb.dcim.sites.delete([old_nb_dc.id])
 
         if server.rack != nb_rack:
+            old_nb_rack = server.rack
+
             logging.info('Rack location has changed from {} to {}, updating'.format(
                 server.rack,
                 nb_rack,
@@ -106,9 +122,24 @@ class ServerBase():
             update = True
             server.rack = nb_rack
 
+            nb.dcim.devices.update([{
+                "id": server.id,
+                "rack": server.rack.id if server.rack is not None else None
+            }])
+
             if nb_rack is None:
                 server.face = None
                 server.position = None
+
+            if old_nb_rack is not None:
+                old_nb_rack = nb.dcim.racks.get(
+                    name=old_nb_rack,
+                    site_id=old_nb_rack.site.id,
+                )
+
+                if old_nb_rack.device_count == 0:
+                    logging.info("Deleting Rack: {name}".format(name=old_nb_rack))
+                    nb.dcim.racks.delete([old_nb_rack.id])
 
         nb_location = self.get_netbox_location()
         if (
@@ -128,7 +159,7 @@ class ServerBase():
             nb.dcim.devices.update([{
                 "id": server.id,
                 "location": server.location.id if server.location is not None else None
-            }])[0]
+            }])
 
             if old_nb_location is not None:
                 old_nb_location = nb.dcim.locations.get(
@@ -137,13 +168,11 @@ class ServerBase():
                 )
 
                 if old_nb_location.rack_count == 0 and old_nb_location.device_count == 0:
-                    logging.info("Deleting Location: name = {name}, id = {id}".format(
-                        name=old_nb_location,
-                        id=old_nb_location.id
-                    ))
+                    logging.info("Deleting Location: {name}".format(name=old_nb_location))
                     nb.dcim.locations.delete([old_nb_location.id])
 
         return update, server
+
 
     def update_netbox_expansion_location(self, server, expansion):
         update = False
@@ -359,6 +388,14 @@ class ServerBase():
     def _netbox_create_server(self, datacenter, tenant, rack):
         device_role = get_device_role(config.device.server_role)
         device_type = get_device_type(self.get_product_name())
+        nb_location = self.get_netbox_location()
+        location = nb_location.id if nb_location is not None else None
+        if rack is not None:
+            if rack.location is not None:
+                location = rack.location.id
+            else:
+                location = None
+
         if not device_type:
             raise Exception('Chassis "{}" doesn\'t exist'.format(self.get_chassis()))
         serial = self.get_service_tag()
@@ -374,12 +411,12 @@ class ServerBase():
             site=datacenter.id if datacenter else None,
             tenant=tenant.id if tenant else None,
             rack=rack.id if rack else None,
-            location=rack.location.id if rack else self.get_netbox_location().id,
+            location=location,
             tags=[{'name': x} for x in self.tags],
         )
         return new_server
 
-    def _netbox_update_server(self, server_id, datacenter, tenant, rack):
+    def _netbox_update_server(self, server_id, datacenter, tenant):
         device_role = get_device_role(config.device.server_role)
         device_type = get_device_type(self.get_product_name())
         if not device_type:
@@ -397,8 +434,6 @@ class ServerBase():
             "platform": self.device_platform,
             "site": datacenter.id if datacenter else None,
             "tenant": tenant.id if tenant else None,
-            "rack": rack.id if rack else None,
-            "location": rack.location.id if rack else self.get_netbox_location().id,
             "tags": [{'name': x} for x in self.tags]
         }])
         return new_server[0]
@@ -583,13 +618,13 @@ class ServerBase():
             server.custom_fields = self.custom_fields
             update += 1
 
+        if config.update_all or config.update_location:
+            ret, server = self.update_netbox_location(server)
+            update += ret
+
         if config.update_all:
             server = self._netbox_update_server(server.id, datacenter, tenant, rack)
             update += True
-
-        if config.update_location:
-            ret, server = self.update_netbox_location(server)
-            update += ret
 
         if server.platform != self.device_platform:
             server.platform = self.device_platform
