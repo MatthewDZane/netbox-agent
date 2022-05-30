@@ -4,6 +4,7 @@ from shutil import which
 import subprocess
 import socket
 import re
+import logging
 
 
 def is_tool(name):
@@ -16,7 +17,12 @@ def get_device_role(role):
         name=role
     )
     if device_role is None:
-        raise Exception('DeviceRole "{}" does not exist, please create it'.format(role))
+        logging.info("Creating Device Role {role}".format(role=role))
+        device_role = nb.dcim.device_roles.create(
+            name=role,
+            slug=role.lower(),
+            color="9e9e9e"
+        )
     return device_role
 
 
@@ -25,7 +31,12 @@ def get_device_type(type):
         model=type
     )
     if device_type is None:
-        raise Exception('DeviceType "{}" does not exist, please create it'.format(type))
+        logging.info("Creating Device Type {type}. Remember to change the manufacturer".format(type=type))
+        device_type = nb.dcim.device_types.create(
+            model=type,
+            slug=type.lower(),
+            manufacturer=37
+        )
     return device_type
 
 
