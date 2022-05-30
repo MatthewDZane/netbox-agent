@@ -584,8 +584,8 @@ class ServerBase():
             update += 1
 
         if config.update_all:
-            ret, server = self._netbox_update_server(server)
-            update += ret
+            server = self._netbox_update_server(server.id, datacenter, tenant, rack)
+            update += True
 
         if config.update_location:
             ret, server = self.update_netbox_location(server)
