@@ -109,7 +109,7 @@ class ServerBase():
                 old_nb_dc = nb.dcim.sites.get(slug=old_nb_dc.slug)
 
                 if old_nb_dc.device_count == 0:
-                    logging.info("Deleting Site: {name}".format(name=old_nb_dc.site.name))
+                    logging.info("Deleting Site: {name}".format(name=old_nb_dc.name))
                     nb.dcim.sites.delete([old_nb_dc.id])
 
         if server.rack != nb_rack:
