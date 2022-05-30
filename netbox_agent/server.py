@@ -60,6 +60,7 @@ class ServerBase():
         tenant = self.get_tenant()
         if tenant is None:
             return None
+        slug = tenant.lower().replace(" ", "-")
         nb_tenant = nb.tenancy.tenants.get(
             slug=self.get_tenant()
         )
@@ -200,16 +201,17 @@ class ServerBase():
             logging.error("Can't get location if no datacenter is configured or found")
             sys.exit(1)
 
+        slug = location.lower().replace(" ", "-")
         location_name = location.replace("-", " ")
         nb_location = nb.dcim.locations.get(
-            name=location_name,
+            name=location,
             site_id=datacenter.id,
         )
 
         if nb_location is None:
             nb_location = nb.dcim.locations.create(
                 name=location_name,
-                slug=location.lower(),
+                slug=slug,
                 site=datacenter.id
             )
 
