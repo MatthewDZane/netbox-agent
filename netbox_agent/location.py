@@ -74,14 +74,14 @@ class Tenant(LocationBase):
         #    super().__init__(os.environ['NETBOX_TENANT'])
 
 
-class Datacenter(LocationBase):
+class Site(LocationBase):
     def __init__(self):
-        driver = config.datacenter.driver.split(':')[0] if \
-            config.datacenter.driver else None
-        driver_value = ':'.join(config.datacenter.driver.split(':')[1:]) if \
-            config.datacenter.driver else None
-        driver_file = config.datacenter.driver_file
-        regex = config.datacenter.regex
+        driver = config.site.driver.split(':')[0] if \
+            config.site.driver else None
+        driver_value = ':'.join(config.site.driver.split(':')[1:]) if \
+            config.site.driver else None
+        driver_file = config.site.driver_file
+        regex = config.site.regex
 
         #if driver and driver_value and driver_file and regex:
         super().__init__(driver, driver_value, driver_file, regex)

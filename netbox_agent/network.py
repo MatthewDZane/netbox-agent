@@ -196,7 +196,7 @@ class Network(object):
         return self.dcim_choices['interface:type']['Other']
 
     def get_or_create_vlan(self, vlan_id):
-        # FIXME: we may need to specify the datacenter
+        # FIXME: we may need to specify the site
         # since users may have same vlan id in multiple dc
         vlan = nb.ipam.vlans.get(
             vid=vlan_id,

@@ -72,7 +72,7 @@ def get_config():
 
     add_location_argument(p, "location")
     add_location_argument(p, "tenant")
-    add_location_argument(p, "datacenter")
+    add_location_argument(p, "site")
     add_location_argument(p, "rack")
     add_location_argument(p, "slot")
 

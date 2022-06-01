@@ -58,10 +58,10 @@ class VirtualMachine(object):
         )
         return cluster
 
-    def get_netbox_datacenter(self, name):
+    def get_netbox_site(self, name):
         cluster = self.get_netbox_cluster()
-        if cluster.datacenter:
-            return cluster.datacenter
+        if cluster.site:
+            return cluster.site
         return None
 
     def get_tenant(self):
