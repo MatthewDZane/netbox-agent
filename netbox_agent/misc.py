@@ -35,6 +35,7 @@ def get_device_type(type):
         device_type = nb.dcim.device_types.create(
             model=type,
             slug=type.lower(),
+            part_number=type,
             manufacturer=37
         )
     return device_type
