@@ -7,6 +7,17 @@ import requests
 import urllib3
 
 
+def add_location_argument(argument_parser, argument):
+    argument_name = argument.replace("_", " ").replace("-", " ")
+    argument_name = argument_name[0].upper() + argument_name[1:]
+    argument_parser.add_argument("--" + argument + ".driver",
+                                 help=argument_name + " driver, ie cmd, file")
+    argument_parser.add_argument("--" + argument + ".driver_file",
+                                 help=argument_name + " driver custom driver file path")
+    argument_parser.add_argument("--" + argument + ".regex",
+                                 help=argument_name + " regex to extract Netbox tenant slug")
+
+
 def get_config():
     p = jsonargparse.ArgumentParser(
         default_config_files=[
@@ -43,11 +54,13 @@ def get_config():
     p.add_argument('--virtual.cluster_name', help='Cluster name of VM')
     p.add_argument('--hostname_cmd', default=None,
                    help="Command to output hostname, used as Device's name in netbox")
+
     p.add_argument('--device.platform', default=None,
                    help='Override device platform. Here we use OS distribution.')
     p.add_argument('--device.tags', default=r'',
                    help='tags to use for a host')
-    p.add_argument('--preserve-tags', action='store_true', help='Append new unique tags, preserve those already present')
+    p.add_argument('--preserve-tags', action='store_true',
+                   help='Append new unique tags, preserve those already present')
     p.add_argument('--device.custom_fields', default=r'',
                    help='custom_fields to use for a host, eg: field1=v1,field2=v2')
     p.add_argument('--device.blade_role', default=r'Blade',
@@ -56,30 +69,13 @@ def get_config():
                    help='role to use for a chassis')
     p.add_argument('--device.server_role', default=r'Server',
                    help='role to use for a server')
-    p.add_argument('--location.driver',
-                   help='location driver, ie cmd, file')
-    p.add_argument('--location.driver_file',
-                   help='location driver custom driver file path')
-    p.add_argument('--location.regex',
-                   help='location regex to extract Netbox location slug')
-    p.add_argument('--tenant.driver',
-                   help='tenant driver, ie cmd, file')
-    p.add_argument('--tenant.driver_file',
-                   help='tenant driver custom driver file path')
-    p.add_argument('--tenant.regex',
-                   help='tenant regex to extract Netbox tenant slug')
-    p.add_argument('--datacenter_location.driver',
-                   help='Datacenter location driver, ie: cmd, file')
-    p.add_argument('--datacenter_location.driver_file',
-                   help='Datacenter location custom driver file path')
-    p.add_argument('--datacenter_location.regex',
-                   help='Datacenter location regex to extract Netbox DC slug')
-    p.add_argument('--rack_location.driver', help='Rack location driver, ie: cmd, file')
-    p.add_argument('--rack_location.driver_file', help='Rack location custom driver file path')
-    p.add_argument('--rack_location.regex', help='Rack location regex to extract Rack name')
-    p.add_argument('--slot_location.driver', help='Slot location driver, ie: cmd, file')
-    p.add_argument('--slot_location.driver_file', help='Slot location custom driver file path')
-    p.add_argument('--slot_location.regex', help='Slot location regex to extract slot name')
+
+    add_location_argument(p, "location")
+    add_location_argument(p, "tenant")
+    add_location_argument(p, "datacenter_location")
+    add_location_argument(p, "rack_location")
+    add_location_argument(p, "slot_location")
+
     p.add_argument('--network.ignore_interfaces', default=r'(dummy.*|docker.*)',
                    help='Regex to ignore interfaces')
     p.add_argument('--network.ignore_ips', default=r'^(127\.0\.0\..*|fe80.*|::1.*)',
