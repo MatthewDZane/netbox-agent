@@ -2,7 +2,7 @@ import netbox_agent.dmidecode as dmidecode
 from netbox_agent.config import config
 from netbox_agent.config import netbox_instance as nb
 from netbox_agent.inventory import Inventory
-from netbox_agent.location import Site, Location, Rack, Tenant
+from netbox_agent.location import Site, Location, Rack, Tenant, Position, Face
 from netbox_agent.misc import create_netbox_tags, get_device_role, get_device_type, get_device_platform
 from netbox_agent.network import ServerNetwork
 from netbox_agent.power import PowerSupply
@@ -261,6 +261,14 @@ class ServerBase():
 
         return nb_rack
 
+    def get_position(self):
+        position = Position()
+        return position.get()
+
+    def get_face(self):
+        face = Face()
+        return face.get()
+
     def get_product_name(self):
         """
         Return the Chassis Name from dmidecode info
@@ -319,6 +327,8 @@ class ServerBase():
         device_type = get_device_type(self.get_chassis())
         device_role = get_device_role(config.device.chassis_role)
         serial = self.get_chassis_service_tag()
+        position = self.get_position()
+        face = self.get_face()
         logging.info('Creating chassis blade (serial: {serial})'.format(
             serial=serial))
         new_chassis = nb.dcim.devices.create(
@@ -329,6 +339,8 @@ class ServerBase():
             site=site.id if site else None,
             tenant=tenant.id if tenant else None,
             rack=rack.id if rack else None,
+            position=position,
+            face=face,
             tags=[{'name': x} for x in self.tags],
             custom_fields=self.custom_fields,
         )
@@ -339,6 +351,8 @@ class ServerBase():
         device_type = get_device_type(self.get_product_name())
         serial = self.get_service_tag()
         hostname = self.get_hostname()
+        position = self.get_position()
+        face = self.get_face()
         logging.info(
             'Creating blade (serial: {serial}) {hostname} on chassis {chassis_serial}'.format(
                 serial=serial, hostname=hostname, chassis_serial=chassis.serial
@@ -352,6 +366,8 @@ class ServerBase():
             site=site.id if site else None,
             tenant=tenant.id if tenant else None,
             rack=rack.id if rack else None,
+            position=position,
+            face=face,
             tags=[{'name': x} for x in self.tags],
             custom_fields=self.custom_fields,
         )
@@ -362,6 +378,8 @@ class ServerBase():
         device_type = get_device_type(self.get_expansion_product())
         serial = self.get_expansion_service_tag()
         hostname = self.get_hostname() + " expansion"
+        position = self.get_position()
+        face = self.get_face()
         logging.info(
             'Creating expansion (serial: {serial}) {hostname} on chassis {chassis_serial}'.format(
                 serial=serial, hostname=hostname, chassis_serial=chassis.serial
@@ -375,6 +393,8 @@ class ServerBase():
             site=site.id if site else None,
             tenant=tenant.id if tenant else None,
             rack=rack.id if rack else None,
+            position=position,
+            face=face,
             tags=[{'name': x} for x in self.tags],
         )
         return new_blade
@@ -390,6 +410,8 @@ class ServerBase():
         device_role = get_device_role(config.device.server_role)
         device_type = get_device_type(self.get_product_name())
         nb_location = self.get_netbox_location()
+        position = self.get_position()
+        face = self.get_face()
         location = nb_location.id if nb_location is not None else None
         if rack is not None:
             if rack.location is not None:
@@ -411,8 +433,10 @@ class ServerBase():
             platform=self.device_platform,
             site=site.id if site else None,
             tenant=tenant.id if tenant else None,
-            rack=rack.id if rack else None,
             location=location,
+            rack=rack.id if rack else None,
+            position=position,
+            face=face,
             tags=[{'name': x} for x in self.tags],
         )
         return new_server
@@ -420,6 +444,8 @@ class ServerBase():
     def _netbox_update_server(self, server_id, site, tenant):
         device_role = get_device_role(config.device.server_role)
         device_type = get_device_type(self.get_product_name())
+        position = self.get_position()
+        face = self.get_face()
         if not device_type:
             raise Exception('Chassis "{}" doesn\'t exist'.format(self.get_chassis()))
         serial = self.get_service_tag()
@@ -434,6 +460,8 @@ class ServerBase():
             "device_type": device_type.id,
             "platform": self.device_platform,
             "site": site.id if site else None,
+            "position": position,
+            "face": face,
             "tenant": tenant.id if tenant else None,
             "tags": [{'name': x} for x in self.tags]
         }])
