@@ -41,7 +41,7 @@ class LLDP():
                     vlans[interface][vid] = vlans[interface].get(vid, {})
                 elif 'pvid' in path:
                     vlans[interface][vid]['pvid'] = True
-            if 'vlan' not in path:
+            if 'vlan' not in path and final != "unknown-tlv":
                 current_dict[final] = value
         for interface, vlan in vlans.items():
             output_dict['lldp'][interface]['vlan'] = vlan
