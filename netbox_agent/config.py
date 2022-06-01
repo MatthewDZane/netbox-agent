@@ -72,9 +72,9 @@ def get_config():
 
     add_location_argument(p, "location")
     add_location_argument(p, "tenant")
-    add_location_argument(p, "datacenter_location")
-    add_location_argument(p, "rack_location")
-    add_location_argument(p, "slot_location")
+    add_location_argument(p, "datacenter")
+    add_location_argument(p, "rack")
+    add_location_argument(p, "slot")
 
     p.add_argument('--network.ignore_interfaces', default=r'(dummy.*|docker.*)',
                    help='Regex to ignore interfaces')

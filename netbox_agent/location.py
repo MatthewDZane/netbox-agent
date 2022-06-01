@@ -1,3 +1,4 @@
+import os
 import importlib
 import importlib.machinery
 
@@ -18,11 +19,16 @@ class LocationBase():
     the logic isn't supported here.
     """
 
+    def __init__(self, value):
+        self.value = value
+
     def __init__(self, driver, driver_value, driver_file, regex, *args, **kwargs):
         self.driver = driver
         self.driver_value = driver_value
         self.driver_file = driver_file
         self.regex = regex
+
+        self.value = None
 
         if self.driver_file:
             try:
@@ -41,13 +47,16 @@ class LocationBase():
                     raise ImportError("Driver {} doesn't exists".format(self.driver))
 
     def get(self):
-        if self.driver is None:
-            return None
-        if not hasattr(self.driver, 'get'):
-            raise Exception(
-                "Your driver {} doesn't have a get() function, please fix it".format(self.driver)
-            )
-        return getattr(self.driver, 'get')(self.driver_value, self.regex)
+        if self.value is None:
+            if self.driver is None:
+                return None
+            if not hasattr(self.driver, 'get'):
+                raise Exception(
+                    "Your driver {} doesn't have a get() function, please fix it".format(self.driver)
+                )
+            return getattr(self.driver, 'get')(self.driver_value, self.regex)
+        else:
+            return self.value
 
 
 class Tenant(LocationBase):
@@ -58,18 +67,26 @@ class Tenant(LocationBase):
             config.tenant.driver else None
         driver_file = config.tenant.driver_file
         regex = config.tenant.regex
+
+        #if driver and driver_value and driver_file and regex:
         super().__init__(driver, driver_value, driver_file, regex)
+        #else:
+        #    super().__init__(os.environ['NETBOX_TENANT'])
 
 
 class Datacenter(LocationBase):
     def __init__(self):
-        driver = config.datacenter_location.driver.split(':')[0] if \
-            config.datacenter_location.driver else None
-        driver_value = ':'.join(config.datacenter_location.driver.split(':')[1:]) if \
-            config.datacenter_location.driver else None
-        driver_file = config.datacenter_location.driver_file
-        regex = config.datacenter_location.regex
+        driver = config.datacenter.driver.split(':')[0] if \
+            config.datacenter.driver else None
+        driver_value = ':'.join(config.datacenter.driver.split(':')[1:]) if \
+            config.datacenter.driver else None
+        driver_file = config.datacenter.driver_file
+        regex = config.datacenter.regex
+
+        #if driver and driver_value and driver_file and regex:
         super().__init__(driver, driver_value, driver_file, regex)
+        #else:
+        #super().__init__(os.environ['HOSTNAME'])
 
 
 class Location(LocationBase):
@@ -80,26 +97,38 @@ class Location(LocationBase):
             config.location.driver else None
         driver_file = config.location.driver_file
         regex = config.location.regex
+
+        #if driver and driver_value and driver_file and regex:
         super().__init__(driver, driver_value, driver_file, regex)
+        #else:
+        #    super().__init__(os.environ['NETBOX_LOCATION'])
 
 
 class Rack(LocationBase):
     def __init__(self):
-        driver = config.rack_location.driver.split(':')[0] if \
-            config.rack_location.driver else None
-        driver_value = ':'.join(config.rack_location.driver.split(':')[1:]) if \
-            config.rack_location.driver else None
-        driver_file = config.rack_location.driver_file
-        regex = config.rack_location.regex
+        driver = config.rack.driver.split(':')[0] if \
+            config.rack.driver else None
+        driver_value = ':'.join(config.rack.driver.split(':')[1:]) if \
+            config.rack.driver else None
+        driver_file = config.rack.driver_file
+        regex = config.rack.regex
+
+        #if driver and driver_value and driver_file and regex:
         super().__init__(driver, driver_value, driver_file, regex)
+        #else:
+        #    super().__init__(os.environ['NETBOX_RACK'])
 
 
 class Slot(LocationBase):
     def __init__(self):
-        driver = config.slot_location.driver.split(':')[0] if \
-            config.slot_location.driver else None
-        driver_value = ':'.join(config.slot_location.driver.split(':')[1:]) if \
-            config.slot_location.driver else None
-        driver_file = config.slot_location.driver_file
-        regex = config.slot_location.regex
+        driver = config.slot.driver.split(':')[0] if \
+            config.slotn.driver else None
+        driver_value = ':'.join(config.slot.driver.split(':')[1:]) if \
+            config.slot.driver else None
+        driver_file = config.slot.driver_file
+        regex = config.slot.regex
+
+        #if driver and driver_value and driver_file and regex:
         super().__init__(driver, driver_value, driver_file, regex)
+        #else:
+        #    super().__init__(os.environ['NETBOX_SLOT'])
