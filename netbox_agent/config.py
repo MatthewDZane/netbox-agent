@@ -75,6 +75,8 @@ def get_config():
     add_location_argument(p, "site")
     add_location_argument(p, "rack")
     add_location_argument(p, "slot")
+    add_location_argument(p, "position")
+    add_location_argument(p, "face")
 
     p.add_argument('--network.ignore_interfaces', default=r'(dummy.*|docker.*)',
                    help='Regex to ignore interfaces')

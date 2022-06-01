@@ -122,7 +122,7 @@ class Rack(LocationBase):
 class Slot(LocationBase):
     def __init__(self):
         driver = config.slot.driver.split(':')[0] if \
-            config.slotn.driver else None
+            config.slot.driver else None
         driver_value = ':'.join(config.slot.driver.split(':')[1:]) if \
             config.slot.driver else None
         driver_file = config.slot.driver_file
@@ -132,3 +132,34 @@ class Slot(LocationBase):
         super().__init__(driver, driver_value, driver_file, regex)
         #else:
         #    super().__init__(os.environ['NETBOX_SLOT'])
+
+
+class Position(LocationBase):
+    def __init__(self):
+        driver = config.position.driver.split(':')[0] if \
+            config.position.driver else None
+        driver_value = ':'.join(config.position.driver.split(':')[1:]) if \
+            config.position.driver else None
+        driver_file = config.position.driver_file
+        regex = config.position.regex
+
+        # if driver and driver_value and driver_file and regex:
+        super().__init__(driver, driver_value, driver_file, regex)
+        # else:
+        #    super().__init__(os.environ['NETBOX_POSITION'])
+
+
+class Face(LocationBase):
+    def __init__(self):
+        driver = config.face.driver.split(':')[0] if \
+            config.face.driver else None
+        driver_value = ':'.join(config.face.driver.split(':')[1:]) if \
+            config.face.driver else None
+        driver_file = config.face.driver_file
+        regex = config.face.regex
+
+        # if driver and driver_value and driver_file and regex:
+        super().__init__(driver, driver_value, driver_file, regex)
+        # else:
+        #    super().__init__(os.environ['NETBOX_FACE'])
+
