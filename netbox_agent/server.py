@@ -67,51 +67,51 @@ class ServerBase():
         return nb_tenant
 
     def get_site(self):
-        dc = Site()
-        return dc.get()
+        site = Site()
+        return site.get()
 
     def get_netbox_site(self):
-        dc = self.get_site()
-        if dc is None:
+        site = self.get_site()
+        if site is None:
             logging.error("Specifying a Site is mandatory in Netbox")
             sys.exit(1)
 
-        slug = dc.lower().replace(" ", "-")
-        nb_dc = nb.dcim.sites.get(slug=slug)
+        name = site.replace("-", " ")
+        slug = site.lower().replace(" ", "-")
+        nb_site = nb.dcim.sites.get(slug=slug)
 
-        if nb_dc is None:
-            logging.error("Creating Site {name}. Remember to set the Region.".format(name=dc))
-            nb.dcim.sites.create(name=dc, slug=slug, status="active")
+        if nb_site is None:
+            logging.error("Creating Site {name}. Remember to set the Region.".format(name=name))
+            nb.dcim.sites.create(name=name, slug=slug, status="active")
 
-        return nb_dc
+        return nb_site
 
     def update_netbox_location(self, server):
-        dc = self.get_site()
         nb_rack = self.get_netbox_rack()
-        nb_dc = self.get_netbox_site()
+        nb_site = self.get_netbox_site()
 
         update = False
-        if server.site != nb_dc:
-            old_nb_dc = server.site
+        if server.site != nb_site:
+            old_nb_site = server.site
 
             logging.info('Site location has changed from {} to {}, updating'.format(
                 server.site.slug,
-                nb_dc.slug,
+                nb_site.slug,
             ))
             update = True
-            server.site = nb_dc
+            server.site = nb_site
 
             nb.dcim.devices.update([{
                 "id": server.id,
                 "site": server.site.id if server.site is not None else None
             }])
 
-            if old_nb_dc is not None:
-                old_nb_dc = nb.dcim.sites.get(slug=old_nb_dc.slug)
+            if old_nb_site is not None:
+                old_nb_site = nb.dcim.sites.get(slug=old_nb_site.slug)
 
-                if old_nb_dc.device_count == 0:
-                    logging.info("Deleting Site: {name}".format(name=old_nb_dc.name))
-                    nb.dcim.sites.delete([old_nb_dc.id])
+                if old_nb_site.device_count == 0:
+                    logging.info("Deleting Site: {name}".format(name=old_nb_site.name))
+                    nb.dcim.sites.delete([old_nb_site.id])
 
         if server.rack != nb_rack:
             old_nb_rack = server.rack
@@ -200,16 +200,17 @@ class ServerBase():
             logging.error("Can't get location if no site is configured or found")
             sys.exit(1)
 
+        name = location.replace("-", " ")
         slug = location.lower().replace(" ", "-")
-        location_name = location.replace("-", " ")
+
         nb_location = nb.dcim.locations.get(
-            name=location,
+            name=name,
             site_id=site.id,
         )
 
         if nb_location is None:
             nb_location = nb.dcim.locations.create(
-                name=location_name,
+                name=name,
                 slug=slug,
                 site=site.id
             )
@@ -229,15 +230,17 @@ class ServerBase():
             logging.error("Can't get rack if no site is configured or found")
             sys.exit(1)
 
+        name = rack.replace("-", " ")
+
         nb_rack = nb.dcim.racks.get(
-            name=rack,
+            name=name,
             site_id=site.id,
         )
 
         nb_location = self.get_netbox_location()
         if nb_rack is None:
             nb_rack = nb.dcim.racks.create(
-                name=rack,
+                name=name,
                 site=site.id,
                 location=nb_location.id if nb_location is not None else None
             )
