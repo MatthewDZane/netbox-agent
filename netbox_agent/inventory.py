@@ -78,6 +78,12 @@ class Inventory():
         if name is None:
             return None
 
+        invalid_manufacturers = ["00CE063200CE", "00CE00B300CE", "00AD069D00AD", "00AD063200AD", "00AD00B380AD",
+                                 "00AD00B300AD", "002C0632002C", "002C04B3002C", "002C00B3002C"]
+        if name in invalid_manufacturers:
+            logging.info("{name} is an invalid manufacturer. Using None value instead.")
+            name = "None"
+
         manufacturer = nb.dcim.manufacturers.get(
             name=name,
         )
