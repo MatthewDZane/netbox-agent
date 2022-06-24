@@ -577,13 +577,21 @@ class ServerNetwork(Network):
         else:
             nb_sw_int = nb_server_interface.cable.termination_b
             nb_sw = nb_sw_int.device
-            nb_mgmt_int = nb.dcim.interfaces.get(
-                device_id=nb_sw.id,
-                mgmt_only=True
-            )
-            nb_mgmt_ip = nb.ipam.ip_addresses.get(
-                interface_id=nb_mgmt_int.id
-            )
+
+            try:
+                nb_mgmt_int = nb.dcim.interfaces.get(
+                    device_id=nb_sw.id,
+                    mgmt_only=True
+                )
+                nb_mgmt_ip = nb.ipam.ip_addresses.get(
+                    interface_id=nb_mgmt_int.id
+                )
+            except ValueError:
+                nb_device = nb.dcim.devices.get(
+                    name=nb_sw.name
+                )
+                nb_mgmt_ip = nb_device.primary_ip
+
             if nb_mgmt_ip is None:
                 logging.error(
                     'Switch {switch_ip} does not have IP on its management interface'.format(
