@@ -172,6 +172,19 @@ class ServerBase():
                     logging.info("Deleting Location: {name}".format(name=old_nb_location))
                     nb.dcim.locations.delete([old_nb_location.id])
 
+        height = self.get_rack_height()
+        if nb_rack and height and nb_rack.u_height != height:
+            logging.info("Changing rack {name} height from {old_height} to {new_height}".format(
+                name=nb_rack.name,
+                old_height=nb_rack.u_height,
+                new_height=height
+            ))
+            nb.dcim.racks.update([{
+                "id": nb_rack.id,
+                "u_height": height
+            }])
+
+
         return update, server
 
     def update_netbox_expansion_location(self, server, expansion):
@@ -271,6 +284,16 @@ class ServerBase():
     def get_face(self):
         face = InputDriver("face")
         return face.get()
+
+    def get_rack_height(self):
+        height = InputDriver("height").get()
+
+        height = int(height)
+        if height < 0:
+            raise ValueError("Height must be greater than 0. Height value was {}".format(height))
+
+        return height
+
 
     def get_product_name(self):
         """
