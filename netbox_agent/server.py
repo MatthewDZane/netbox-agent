@@ -172,15 +172,19 @@ class ServerBase():
                     logging.info("Deleting Location: {name}".format(name=old_nb_location))
                     nb.dcim.locations.delete([old_nb_location.id])
 
+        device_type = nb.dcim.device_types.get(
+            id=server.device_type.id
+        )
+
         height = self.get_rack_height()
-        if nb_rack and height and nb_rack.u_height != height:
-            logging.info("Changing rack {name} height from {old_height} to {new_height}".format(
-                name=nb_rack.name,
-                old_height=nb_rack.u_height,
+        if height and device_type.u_height != height:
+            logging.info("Changing device type {name} height from {old_height} to {new_height}".format(
+                name=device_type.name,
+                old_height=device_type.u_height,
                 new_height=height
             ))
-            nb.dcim.racks.update([{
-                "id": nb_rack.id,
+            nb.dcim.device_type.update([{
+                "id": device_type.id,
                 "u_height": height
             }])
 
