@@ -22,19 +22,19 @@ class InputDriver:
     def __init__(self, input_type):
         argument = None
         if input_type == "region":
-            argument = config.height
+            argument = config.region
         elif input_type == "site":
-            argument = config.height
+            argument = config.site
         elif input_type == "location":
-            argument = config.height
+            argument = config.location
         elif input_type == "rack":
-            argument = config.height
+            argument = config.rack
         elif input_type == "position":
-            argument = config.height
+            argument = config.position
         elif input_type == "face":
-            argument = config.height
+            argument = config.face
         elif input_type == "tenant":
-            argument = config.height
+            argument = config.tenant
         elif input_type == "height":
             argument = config.height
 
