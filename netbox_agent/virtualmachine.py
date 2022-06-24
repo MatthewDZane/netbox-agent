@@ -3,7 +3,7 @@ import os
 import netbox_agent.dmidecode as dmidecode
 from netbox_agent.config import config
 from netbox_agent.config import netbox_instance as nb
-from netbox_agent.location import Tenant
+from netbox_agent.inputdriver import InputDriver
 from netbox_agent.logging import logging  # NOQA
 from netbox_agent.misc import create_netbox_tags, get_hostname, get_device_platform
 from netbox_agent.network import VirtualNetwork
@@ -65,7 +65,7 @@ class VirtualMachine(object):
         return None
 
     def get_tenant(self):
-        tenant = Tenant()
+        tenant = InputDriver("tenant")
         return tenant.get()
 
     def get_netbox_tenant(self):

@@ -2,7 +2,7 @@ import netbox_agent.dmidecode as dmidecode
 from netbox_agent.config import config
 from netbox_agent.config import netbox_instance as nb
 from netbox_agent.inventory import Inventory
-from netbox_agent.location import Site, Location, Rack, Tenant, Position, Face
+from netbox_agent.inputdriver import InputDriver
 from netbox_agent.misc import create_netbox_tags, get_device_role, get_device_type, get_device_platform
 from netbox_agent.network import ServerNetwork
 from netbox_agent.power import PowerSupply
@@ -53,7 +53,7 @@ class ServerBase():
         ]))
 
     def get_tenant(self):
-        tenant = Tenant()
+        tenant = InputDriver("tenant")
         return tenant.get()
 
     def get_netbox_tenant(self):
@@ -67,7 +67,7 @@ class ServerBase():
         return nb_tenant
 
     def get_site(self):
-        site = Site()
+        site = InputDriver("site")
         return site.get()
 
     def get_netbox_site(self):
@@ -188,7 +188,7 @@ class ServerBase():
         return update
 
     def get_location(self):
-        location = Location()
+        location = InputDriver("location")
         return location.get()
 
     def get_netbox_location(self):
@@ -218,7 +218,7 @@ class ServerBase():
         return nb_location
 
     def get_rack(self):
-        rack = Rack()
+        rack = InputDriver("rack")
         return rack.get()
 
     def get_netbox_rack(self):
@@ -265,11 +265,11 @@ class ServerBase():
         return nb_rack
 
     def get_position(self):
-        position = Position()
+        position = InputDriver("position")
         return position.get()
 
     def get_face(self):
-        face = Face()
+        face = InputDriver("face")
         return face.get()
 
     def get_product_name(self):

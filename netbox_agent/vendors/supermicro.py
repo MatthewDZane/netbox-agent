@@ -1,4 +1,4 @@
-from netbox_agent.location import Slot
+from netbox_agent.inputdriver import InputDriver
 from netbox_agent.server import ServerBase
 
 
@@ -40,7 +40,7 @@ class SupermicroHost(ServerBase):
         if self.is_blade():
             # Some Supermicro servers don't report the slot in dmidecode
             # let's use a regex
-            slot = Slot()
+            slot = InputDriver("position")
             return slot.get()
         # No supermicro on hands
         return None
