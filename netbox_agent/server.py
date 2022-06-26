@@ -292,9 +292,12 @@ class ServerBase():
     def get_rack_height(self):
         height = InputDriver("height").get()
 
-        height = int(height)
-        if height < 0:
-            raise ValueError("Height must be greater than 0. Height value was {}".format(height))
+        try:
+            height = int(height)
+            if height < 0:
+                raise ValueError("Height must be greater than 0. Height value was {}".format(height))
+        except TypeError:
+            return None
 
         return height
 
