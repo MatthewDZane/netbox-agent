@@ -9,7 +9,7 @@ from netbox_agent.vendors.hp import HPHost
 from netbox_agent.vendors.qct import QCTHost
 from netbox_agent.vendors.supermicro import SupermicroHost
 from netbox_agent.virtualmachine import VirtualMachine, is_vm
-from inputdriver import InputDriver
+from netbox_agent.inputdriver import InputDriver
 
 MANUFACTURERS = {
     'Dell Inc.': DellHost,
