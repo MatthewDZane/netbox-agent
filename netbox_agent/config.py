@@ -51,7 +51,7 @@ def get_config():
     p.add_argument('--netbox.ssl_verify', default=True, action='store_true',
                    help='Disable SSL verification')
     p.add_argument('--virtual.enabled', action='store_true', help='Is a virtual machine or not')
-    add_location_argument(p, "virtual.cluster_name")
+    add_location_argument(p, "cluster")
     p.add_argument('--hostname_cmd', default=None,
                    help="Command to output hostname, used as Device's name in netbox")
 

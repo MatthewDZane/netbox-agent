@@ -25,8 +25,8 @@ def run(config):
     dmi = dmidecode.parse()
 
     if config.virtual.enabled or is_vm(dmi):
-        if not InputDriver("virtual.cluster_name").get():
-            raise Exception('virtual.cluster_name parameter is mandatory because it\'s a VM')
+        if not InputDriver("cluster").get():
+            raise Exception('cluster parameter is mandatory because it\'s a VM')
         server = VirtualMachine(dmi=dmi)
     else:
         manufacturer = dmidecode.get_by_type(dmi, 'Chassis')[0].get('Manufacturer')
