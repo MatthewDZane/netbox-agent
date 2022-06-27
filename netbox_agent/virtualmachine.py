@@ -123,3 +123,6 @@ class VirtualMachine(object):
 
         if updated:
             vm.save()
+
+    def print_debug(self):
+        pass
