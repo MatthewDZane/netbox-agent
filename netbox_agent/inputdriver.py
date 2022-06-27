@@ -37,6 +37,8 @@ class InputDriver:
             argument = config.tenant
         elif input_type == "height":
             argument = config.height
+        elif input_type == "virtual.cluster_name":
+            argument = config.virtual.cluster_name
 
         if not argument:
             raise Exception("Invalid input type: {}".format(input_type))
