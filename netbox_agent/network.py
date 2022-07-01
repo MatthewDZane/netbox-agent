@@ -280,7 +280,9 @@ class Network(object):
         if nic['mac']:
             params['mac_address'] = nic['mac']
 
-        interface = self.nb_net.interfaces.create(**params)
+        interface = self.nb_net.interfaces.get(device_id=self.device.id, name=nic['name'])
+        if not interface:
+            interface = self.nb_net.interfaces.create(**params)
 
         if nic['vlan']:
             nb_vlan = self.get_or_create_vlan(nic['vlan'])
