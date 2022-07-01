@@ -540,7 +540,6 @@ class ServerNetwork(Network):
             )
             return nb_server_interface
 
-        switch_interface = self.lldp.get_switch_port(nb_server_interface.name)
         nb_switch_interface = nb.dcim.interfaces.get(
             device=nb_switch,
             name=switch_interface,
