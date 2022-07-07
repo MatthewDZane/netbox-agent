@@ -35,27 +35,7 @@ class LSHW():
         self.motherboard_serial = self.hw_info["children"][0].get("serial", "No S/N")
         self.motherboard = self.hw_info["children"][0].get("product", "Motherboard")
 
-        for k in self.hw_info["children"]:
-            if k["class"] == "power":
-                # self.power[k["id"]] = k
-                self.power.append(k)
-
-            if "children" in k:
-                for j in k["children"]:
-                    if j["class"] == "generic":
-                        continue
-
-                    if j["class"] == "storage":
-                        self.find_storage(j)
-
-                    if j["class"] == "memory":
-                        self.find_memories(j)
-
-                    if j["class"] == "processor":
-                        self.find_cpus(j)
-
-                    if j["class"] == "bridge":
-                        self.walk_bridge(j)
+        self.find_inventory_items(self.hw_info)
 
     def get_hw_linux(self, hwclass):
         if hwclass == "cpu":
@@ -133,7 +113,6 @@ class LSHW():
             except Exception:
                 pass
 
-
     def find_cpus(self, obj):
         if "product" in obj:
             self.cpus.append({
@@ -170,24 +149,28 @@ class LSHW():
                 "description": obj["description"],
             })
 
-    def walk_bridge(self, obj):
-        if "children" not in obj:
-            return
+    def find_inventory_items(self, obj):
+        try:
+            if obj["class"] == "generic":
+                return
+            elif obj["class"] == "power":
+                self.power.append(obj)
+            elif obj["class"] == "storage":
+                self.find_storage(obj)
+            elif obj["class"] == "memory":
+                self.find_memories(obj)
+            elif obj["class"] == "processor":
+                self.find_cpus(obj)
+            elif obj["class"] == "network":
+                self.find_network(obj)
+            elif obj["class"] == "display":
+                self.find_gpus(obj)
+        except KeyError:
+            pass
 
-        for bus in obj["children"]:
-            if bus["class"] == "storage":
-                self.find_storage(bus)
-            if bus["class"] == "display":
-                self.find_gpus(bus)
-
-            if "children" in bus:
-                for b in bus["children"]:
-                    if b["class"] == "storage":
-                        self.find_storage(b)
-                    if b["class"] == "network":
-                        self.find_network(b)
-                    if b["class"] == "display":
-                        self.find_gpus(b)
+        if "children" in obj:
+            for child in obj["children"]:
+                self.find_inventory_items(child)
 
 
 if __name__ == "__main__":
