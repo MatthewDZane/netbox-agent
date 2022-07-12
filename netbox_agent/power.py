@@ -38,8 +38,9 @@ class PowerSupply():
 
             sn = psu.get('Serial Number', '').strip()
             # Let's assume that if no serial and no power reported we skip it
-            if (sn == '' or sn == 'Not Specified') and max_power is None:
-                logging.info('Skipping unknown power supply')
+            invalid_sns = ["", "Not Specified", "To Be Filled By O.E.M."]
+            if (sn in invalid_sns) and max_power is None:
+                logging.info('Skipping unknown power supply. Serial Number: {}'.format(sn))
                 continue
             if sn == '':
                 sn = 'N/A'
