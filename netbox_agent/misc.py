@@ -36,7 +36,7 @@ def get_device_type(type):
             model=type,
             slug=type.lower(),
             part_number=type,
-            manufacturer=37
+            manufacturer=88
         )
     return device_type
 
