@@ -52,6 +52,9 @@ flycheck_*.el
 # network security
 /network-security.data
 
+# pycharm files
+.idea/
+
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
