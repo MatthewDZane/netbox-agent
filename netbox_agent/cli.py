@@ -25,7 +25,8 @@ def run(config):
     dmi = dmidecode.parse()
 
     if config.virtual.enabled or is_vm(dmi):
-        if not InputDriver("cluster").get():
+        config.virtual.cluster_name = InputDriver("cluster").get()
+        if not config.virtual.cluster_name:
             raise Exception('cluster parameter is mandatory because it\'s a VM')
         server = VirtualMachine(dmi=dmi)
     else:
