@@ -124,5 +124,7 @@ class VirtualMachine(object):
         if updated:
             vm.save()
 
+        logging.debug('Finished updating Virtual Machine!')
+
     def print_debug(self):
         pass
