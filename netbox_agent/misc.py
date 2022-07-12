@@ -20,7 +20,7 @@ def get_device_role(role):
         logging.info("Creating Device Role {role}".format(role=role))
         device_role = nb.dcim.device_roles.create(
             name=role,
-            slug=role.lower(),
+            slug=role.lower().replace(" ", "-"),
             color="9e9e9e"
         )
     return device_role
