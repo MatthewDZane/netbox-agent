@@ -62,7 +62,7 @@ class ServerBase():
             return None
         slug = tenant.lower().replace(" ", "-")
         nb_tenant = nb.tenancy.tenants.get(
-            slug=self.get_tenant()
+            slug=slug
         )
         return nb_tenant
 
