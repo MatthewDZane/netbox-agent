@@ -35,7 +35,6 @@ class LLDP():
             if vlans.get(interface) is None:
                 vlans[interface] = {}
 
-            vid = None
             for path_component in path_components:
                 print("PPPPPPPPPPP")
                 current_dict[path_component] = current_dict.get(path_component, {})
@@ -47,7 +46,7 @@ class LLDP():
                 elif path.endswith('vlan'):
                     vid = value.replace('vlan-', '').replace('VLAN', '')
                     vlans[interface][vid] = vlans[interface].get(vid, {})
-                elif 'pvid' in path and vid:
+                elif 'pvid' in path and vid in vlans[interface]:
                     vlans[interface][vid]['pvid'] = True
             if 'vlan' not in path and final != "unknown-tlv":
                 current_dict[final] = value
