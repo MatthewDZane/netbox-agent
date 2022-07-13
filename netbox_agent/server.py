@@ -82,7 +82,7 @@ class ServerBase():
 
         if nb_site is None:
             logging.error("Creating Site {name}. Remember to set the Region.".format(name=name))
-            nb.dcim.sites.create(name=name, slug=slug, status="active")
+            nb_site = nb.dcim.sites.create(name=name, slug=slug, status="active")
 
         return nb_site
 
