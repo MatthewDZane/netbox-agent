@@ -26,20 +26,13 @@ class LLDP():
             interface = split_path[1]
             path_components, final = split_path[:-1], split_path[-1]
             current_dict = output_dict
-            print("DDDDDDDD")
-            print(path, value)
-            print(interface)
-            print(path_components, final)
-            print(current_dict)
 
             if vlans.get(interface) is None:
                 vlans[interface] = {}
 
             for path_component in path_components:
-                print("PPPPPPPPPPP")
                 current_dict[path_component] = current_dict.get(path_component, {})
                 current_dict = current_dict[path_component]
-                print(current_dict)
                 if 'vlan-id' in path:
                     vid = value
                     vlans[interface][value] = vlans[interface].get(vid, {})
