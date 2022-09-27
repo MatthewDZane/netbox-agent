@@ -122,15 +122,15 @@ class ServerBase():
             ))
             update = True
             server.rack = nb_rack
-
+            
+            if nb_rack is None:
+                server.face = None
+                server.position = None
+                
             nb.dcim.devices.update([{
                 "id": server.id,
                 "rack": server.rack.id if server.rack is not None else None
             }])
-
-            if nb_rack is None:
-                server.face = None
-                server.position = None
 
             if old_nb_rack is not None:
                 old_nb_rack = nb.dcim.racks.get(
